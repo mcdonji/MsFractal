@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractal.Web", "src\Fractal.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractal.Tests", "src\Fractal.Tests\Fractal.Tests.csproj", "{3E1DD937-4890-40DD-9FEE-C5BD5151EA55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractal.Domain", "src\Fractal.Domain\Fractal.Domain.csproj", "{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractal.Common", "src\Fractal.Common\Fractal.Common.csproj", "{0BF4F29B-122C-4271-98AE-4D26E9700F2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{3E1DD937-4890-40DD-9FEE-C5BD5151EA55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E1DD937-4890-40DD-9FEE-C5BD5151EA55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E1DD937-4890-40DD-9FEE-C5BD5151EA55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BF4F29B-122C-4271-98AE-4D26E9700F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BF4F29B-122C-4271-98AE-4D26E9700F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BF4F29B-122C-4271-98AE-4D26E9700F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BF4F29B-122C-4271-98AE-4D26E9700F2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

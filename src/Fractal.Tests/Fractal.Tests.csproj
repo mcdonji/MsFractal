@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -101,6 +107,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\DomainConceptDataAccessTest.cs" />
+    <Compile Include="Domain\DomainConceptInstanceDataAccessTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -110,11 +118,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fractal.Common\Fractal.Common.csproj">
+      <Project>{0BF4F29B-122C-4271-98AE-4D26E9700F2D}</Project>
+      <Name>Fractal.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fractal.Domain\Fractal.Domain.csproj">
+      <Project>{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}</Project>
+      <Name>Fractal.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fractal.Web\Fractal.Web.csproj">
       <Project>{B8200CC1-E228-4B83-B2EF-A129B7CF49FE}</Project>
       <Name>Fractal.Web</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
