@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{21898167-C34C-4D2D-ADE7-B2DF7FD0E3E3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Fractal.Domain</RootNamespace>
+    <AssemblyName>Fractal.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\packages\EntityFramework.6.1.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AuditConnectionDescriptionParameter.cs" />
+    <Compile Include="AndClause.cs" />
+    <Compile Include="Audit.cs" />
+    <Compile Include="AuditConnectionDescription.cs" />
+    <Compile Include="AuditDomainConcept.cs" />
+    <Compile Include="AuditDomainConceptField.cs" />
+    <Compile Include="AuditDomainConceptInstance.cs" />
+    <Compile Include="AuditDomainConceptInstanceFieldValue.cs" />
+    <Compile Include="Cardinality.cs" />
+    <Compile Include="ConnectionDescription.cs" />
+    <Compile Include="ConnectionDescriptionParameter.cs" />
+    <Compile Include="ConnectionType.cs" />
+    <Compile Include="DomainConcept.cs" />
+    <Compile Include="DomainConceptField.cs" />
+    <Compile Include="DomainConceptInstance.cs" />
+    <Compile Include="DomainConceptInstanceFieldValue.cs" />
+    <Compile Include="FractalDb.cs" />
+    <Compile Include="FractalContext.cs" />
+    <Compile Include="Migrations\201410061623353_Init.cs" />
+    <Compile Include="Migrations\201410061623353_Init.Designer.cs">
+      <DependentUpon>201410061623353_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410061709036_RenameAuditDc DcId.cs" />
+    <Compile Include="Migrations\201410061709036_RenameAuditDc DcId.Designer.cs">
+      <DependentUpon>201410061709036_RenameAuditDc DcId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410061948204_Add Adc order.cs" />
+    <Compile Include="Migrations\201410061948204_Add Adc order.Designer.cs">
+      <DependentUpon>201410061948204_Add Adc order.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410062118108_Move Audit stuff around for DC and DCF.cs" />
+    <Compile Include="Migrations\201410062118108_Move Audit stuff around for DC and DCF.Designer.cs">
+      <DependentUpon>201410062118108_Move Audit stuff around for DC and DCF.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410062152187_Remove AuditDCF Grouping.cs" />
+    <Compile Include="Migrations\201410062152187_Remove AuditDCF Grouping.Designer.cs">
+      <DependentUpon>201410062152187_Remove AuditDCF Grouping.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410071902315_Dci.cs" />
+    <Compile Include="Migrations\201410071902315_Dci.Designer.cs">
+      <DependentUpon>201410071902315_Dci.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410130256122_Connection Description.cs" />
+    <Compile Include="Migrations\201410130256122_Connection Description.Designer.cs">
+      <DependentUpon>201410130256122_Connection Description.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410130448130_More Connections.cs" />
+    <Compile Include="Migrations\201410130448130_More Connections.Designer.cs">
+      <DependentUpon>201410130448130_More Connections.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WhereClause.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fractal.Common\Fractal.Common.csproj">
+      <Project>{0BF4F29B-122C-4271-98AE-4D26E9700F2D}</Project>
+      <Name>Fractal.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201410061623353_Init.resx">
+      <DependentUpon>201410061623353_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061709036_RenameAuditDc DcId.resx">
+      <DependentUpon>201410061709036_RenameAuditDc DcId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061948204_Add Adc order.resx">
+      <DependentUpon>201410061948204_Add Adc order.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410062118108_Move Audit stuff around for DC and DCF.resx">
+      <DependentUpon>201410062118108_Move Audit stuff around for DC and DCF.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410062152187_Remove AuditDCF Grouping.resx">
+      <DependentUpon>201410062152187_Remove AuditDCF Grouping.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410071902315_Dci.resx">
+      <DependentUpon>201410071902315_Dci.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410130256122_Connection Description.resx">
+      <DependentUpon>201410130256122_Connection Description.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410130448130_More Connections.resx">
+      <DependentUpon>201410130448130_More Connections.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
