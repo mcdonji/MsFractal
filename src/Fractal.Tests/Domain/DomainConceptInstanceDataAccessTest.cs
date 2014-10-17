@@ -65,6 +65,32 @@ namespace Fractal.Tests.Domain
             Assert.AreEqual(3, foos.Count);
         }
 
+        [TestMethod]
+        public void TestCreateConnection()
+        {
+            DomainConcept foo = FractalDb.CreateDomainConcept("Foo", "One", "Two", "Three");
+            DomainConcept foo2 = FractalDb.CreateDomainConcept("Foo2", "Three", "Four");
+            FractalDb.CreateConnectionDescription(foo, foo2, "Things", Cardinality.OneToOne, false, false, true);
+
+            //ConnectionDescriptionParameter cdp = FractalDb.CreateConnectionDescriptionParameter(foo, foo2, "Things", "Traversal");
+
+            DomainConceptInstance jim = FractalDb.CreateDomainConceptInstance("Foo", "Jim", "M", "McDonald");
+            DomainConceptInstance blue = FractalDb.CreateDomainConceptInstance("Foo2", "Blue", "Tomato");
+
+            Connection con = FractalDb.Connect(jim, blue, "Things");
+
+            DomainConceptInstance returnedJim = FractalDb.Dci(dci => dci.DomainConceptName == "Foo" && dci.Id == jim.Id);
+
+            List<DomainConceptInstance> allLeft = returnedJim.AllLeftConnections();
+            List<DomainConceptInstance> allRight = returnedJim.AllRightConnections();
+
+            Assert.AreEqual(0, allLeft.Count);
+            Assert.AreEqual(1, allRight.Count);
+
+
+        }
+
+
     }
 
 }

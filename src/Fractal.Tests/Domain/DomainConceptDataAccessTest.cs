@@ -25,6 +25,9 @@ namespace Fractal.Tests.Domain
             DomainConcept fooReturned = dcs.First();
             Assert.IsNotNull(fooReturned.Id);
             Assert.AreEqual("Foo", fooReturned.Name);
+            Assert.AreEqual(0, fooReturned.Fields.Count);
+            Assert.AreEqual(0, fooReturned.LeftConnectionDescriptions.Count);
+            Assert.AreEqual(0, fooReturned.RightConnectionDescriptions.Count);
         }
 
 
@@ -112,11 +115,13 @@ namespace Fractal.Tests.Domain
             DomainConcept foo = FractalDb.CreateDomainConcept("Foo", "One", "Two", "Three");
             DomainConcept foo2 = FractalDb.CreateDomainConcept("Foo2", "Three", "Four");
             ConnectionDescription fooToFoo2ConnectionDescription = FractalDb.CreateConnectionDescription(foo, foo2, "Things", Cardinality.OneToOne, false, false, true);
-            Assert.AreEqual("Foo", fooToFoo2ConnectionDescription.DcA.Name);
-            Assert.AreEqual("Foo2", fooToFoo2ConnectionDescription.DcB.Name);
+            Assert.AreEqual("Foo", fooToFoo2ConnectionDescription.LeftDomainConcept.Name);
+            Assert.AreEqual("Foo2", fooToFoo2ConnectionDescription.RightDomainConcept.Name);
 
             List<AuditDomainConcept> fooHistory = FractalDb.History(foo);
             Assert.AreEqual(2, fooHistory.Count());
+            Audit audit = fooHistory[0].Audit;
+            string id = audit.Id;
 
             List<AuditDomainConcept> foo2History = FractalDb.History(foo2);
             Assert.AreEqual(2, foo2History.Count());

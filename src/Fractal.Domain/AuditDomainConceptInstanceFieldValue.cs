@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Fractal.Domain
 {
@@ -9,6 +10,7 @@ namespace Fractal.Domain
         public bool Deleted { get; set; }
 
         public string DomainConceptInstanceFieldValueId { get; set; }
+        public string ADciId  { get; set; }
         public virtual AuditDomainConceptInstance ADci { get; set; }
         public string DomainConceptId { get; set; }
         public string DomainConceptName { get; set; }
@@ -17,6 +19,17 @@ namespace Fractal.Domain
         public int Forder { get; set; }
 
         public string FieldValue { get; set; }
+
+        [NotMapped]
+        public AuditDomainConceptInstance AuditDomainConceptInstance
+        {
+            get { return ADci ?? (ADci = FractalDb.Adci(adc => adc.AuditDomainConceptInstanceId == ADciId)); }
+            set
+            {
+                ADci = value;
+                ADciId = value.AuditDomainConceptInstanceId;
+            }
+        }
 
 
         public bool HasChanged(DomainConceptInstanceFieldValue field)
