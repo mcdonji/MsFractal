@@ -57,6 +57,7 @@
     <Compile Include="AuditDomainConceptField.cs" />
     <Compile Include="AuditDomainConceptInstance.cs" />
     <Compile Include="AuditDomainConceptInstanceFieldValue.cs" />
+    <Compile Include="BootstrapWebDoor.cs" />
     <Compile Include="Cardinality.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="ConnectionDescription.cs" />
@@ -66,8 +67,10 @@
     <Compile Include="DomainConceptField.cs" />
     <Compile Include="DomainConceptInstance.cs" />
     <Compile Include="DomainConceptInstanceFieldValue.cs" />
+    <Compile Include="FModel.cs" />
     <Compile Include="FractalDb.cs" />
     <Compile Include="FractalContext.cs" />
+    <Compile Include="FF.cs" />
     <Compile Include="Migrations\201410161928026_Init.cs" />
     <Compile Include="Migrations\201410161928026_Init.Designer.cs">
       <DependentUpon>201410161928026_Init.cs</DependentUpon>
@@ -78,6 +81,8 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Request.cs" />
+    <Compile Include="WebDoor.cs" />
     <Compile Include="WhereClause.cs" />
   </ItemGroup>
   <ItemGroup>

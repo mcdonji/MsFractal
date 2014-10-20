@@ -14,6 +14,7 @@ namespace Fractal.Tests.Domain
             FractalDb.InitAudit();
             FractalDb.RemoveDomainConcept("Foo");
             FractalDb.RemoveDomainConcept("Foo2");
+            FractalDb.RemoveDomainConcept("Foo3");
         }
 
         [TestMethod]
@@ -114,7 +115,7 @@ namespace Fractal.Tests.Domain
         {
             DomainConcept foo = FractalDb.CreateDomainConcept("Foo", "One", "Two", "Three");
             DomainConcept foo2 = FractalDb.CreateDomainConcept("Foo2", "Three", "Four");
-            ConnectionDescription fooToFoo2ConnectionDescription = FractalDb.CreateConnectionDescription(foo, foo2, "Things", Cardinality.OneToOne, false, false, true);
+            ConnectionDescription fooToFoo2ConnectionDescription = FractalDb.CreateConnectionDescription("Foo", "Foo2", "Things", Cardinality.OneToOne, false, false, true);
             Assert.AreEqual("Foo", fooToFoo2ConnectionDescription.LeftDomainConcept.Name);
             Assert.AreEqual("Foo2", fooToFoo2ConnectionDescription.RightDomainConcept.Name);
 
@@ -130,6 +131,18 @@ namespace Fractal.Tests.Domain
             Assert.AreEqual(1, connectionDescriptionHistory.Count());
 
         }
+
+        [TestMethod]
+        public void TestAddConnectionMultiConnectionDescriptionsDc()
+        {
+            DomainConcept foo = FractalDb.CreateDomainConcept("Foo", "One", "Two", "Three");
+            DomainConcept foo2 = FractalDb.CreateDomainConcept("Foo2", "Three", "Four");
+            DomainConcept foo3 = FractalDb.CreateDomainConcept("Foo3", "Five");
+            ConnectionDescription fooToFoo2ConnectionDescription = FractalDb.CreateConnectionDescription("Foo", "Foo2", "Things", Cardinality.OneToOne, false, false, true);
+            ConnectionDescription fooToFoo3ConnectionDescription = FractalDb.CreateConnectionDescription("Foo", "Foo3", "OtherThings", Cardinality.OneToOne, false, false, true);
+
+        }
+
 
 
 

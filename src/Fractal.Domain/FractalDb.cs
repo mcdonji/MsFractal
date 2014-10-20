@@ -98,6 +98,7 @@ namespace Fractal.Domain
 
         public static DomainConcept CreateDomainConcept(string name, params string[] fields)
         {
+            if (Dc(name) != null) { return Dc(name); }
             using (FractalContext fractalDb = new FractalContext())
             {
                 Audit audit = CreateAudit(fractalDb);
@@ -154,29 +155,28 @@ namespace Fractal.Domain
             {
                 DomainConcept dc = Dc(tdc => tdc.Name == domainConceptName, fractalDb);
 
-                List<DomainConceptInstance> dcis = Dcis(dci=>dci.DomainConceptId == dc.Id, fractalDb, false);
+                List<DomainConceptInstance> dcis = Dcis(dci=>dci.DomainConceptId == dc.Id, fractalDb);
                 foreach (DomainConceptInstance dci in dcis)
                 {
-                    RemoveDomainConceptInstance(audit, dc, dci, fractalDb);
+                    RemoveDomainConceptInstance(audit, dc.Name, dci.Id, fractalDb);
                 }
                 if (dc != null)
                 {
                     dc.Fields.ForEach(f => fractalDb.Dcfs.Remove(f));
                     dc.Fields.ForEach(f => fractalDb.Entry(f).State = EntityState.Deleted);
-                    dc.LeftConnectionDescriptions.ForEach(cd =>
-                    {
-                        cd.RightDc.RightConnectionDescriptions.Remove(cd);
-                        fractalDb.Cds.Remove(cd);
-                        fractalDb.Entry(cd).State = EntityState.Deleted;
-                    });
-                    dc.RightConnectionDescriptions.ForEach(cd =>
-                    {
-                        cd.LeftDc.RightConnectionDescriptions.Remove(cd);
-                        fractalDb.Cds.Remove(cd);
-                        fractalDb.Entry(cd).State = EntityState.Deleted;
-                    });
+                    List<ConnectionDescription> leftCds = new List<ConnectionDescription>();
+                    leftCds.AddRange(dc.LeftConnectionDescriptions);
+                    List<ConnectionDescription> rightCds = new List<ConnectionDescription>();
+                    rightCds.AddRange(dc.RightConnectionDescriptions);
 
-                    fractalDb.Dcs.Remove(dc);
+                    foreach (ConnectionDescription cd in leftCds)
+                    {
+                        fractalDb.Entry(cd).State = EntityState.Deleted;
+                    }
+                    foreach (ConnectionDescription cd in rightCds)
+                    {
+                        fractalDb.Entry(cd).State = EntityState.Deleted;
+                    }
                     fractalDb.Entry(dc).State = EntityState.Deleted;
                 }
                 return dc;
@@ -226,35 +226,46 @@ namespace Fractal.Domain
 
         private static void RemoveDomainConceptInstance(DomainConcept adc, DomainConceptInstance dci, FractalContext fractalDb)
         {
-            RemoveDomainConceptInstance(null, adc, dci, fractalDb);
+            RemoveDomainConceptInstance(null, adc.Name, dci.Id, fractalDb);
         }
 
-        private static void RemoveDomainConceptInstance(Audit audit, DomainConcept adc, DomainConceptInstance dci, FractalContext fractalDb)
+
+        private static void RemoveDomainConceptInstance(Audit audit, string domainConceptName, string dciId, FractalContext fractalDb)
         {
-            WithAudit(audit, fractalDb, adc.Name, (dc, fractaDb) =>
+            WithAudit(audit, fractalDb, domainConceptName, (dc, fractaDb) =>
             {
-                PoofChildren(dci, fractalDb);
+                DomainConceptInstance dci = Dci(adci => adci.Id == dciId, fractalDb);
                 dci.Fields.ForEach(fv=> fractaDb.Dcifs.Remove(fv));
                 dci.Fields.ForEach(fv=> fractaDb.Entry(fv).State = EntityState.Deleted );
 
-                dci.LeftCons.ForEach(lcon =>
+                List<Connection> leftCons = new List<Connection>();
+                leftCons.AddRange(dci.LeftConnections);
+                List<Connection> rightCons = new List<Connection>();
+                rightCons.AddRange(dci.RightConnections);
+
+                foreach (Connection lcon in leftCons)
                 {
-                    DomainConceptInstance leftDci = lcon.LeftDci;
-                    leftDci.RightCons = Connections(con => con.LeftDciId == dci.Id, fractalDb);
-                    leftDci.RightCons.Remove(lcon);
-                    fractalDb.Cons.Remove(lcon);
                     fractalDb.Entry(lcon).State = EntityState.Deleted;
-                });
-                dci.RightCons.ForEach(rcon =>
+                }
+                foreach (Connection rcon in rightCons)
                 {
-                    DomainConceptInstance rightDci = rcon.RightDci;
-                    rightDci.LeftCons = Connections(con => con.RightDciId == dci.Id, fractalDb);
-                    rightDci.LeftCons.Remove(rcon);
-                    fractalDb.Cons.Remove(rcon);
                     fractalDb.Entry(rcon).State = EntityState.Deleted;
-                });
-                
-                fractalDb.Dcis.Remove(dci);
+                }
+//                dci.LeftCons.ForEach(lcon =>
+//                {
+////                    DomainConceptInstance leftDci = lcon.LeftDci;
+////                    leftDci.RightCons = Connections(con => con.LeftDciId == dci.Id, fractalDb);
+////                    leftDci.RightCons.Remove(lcon);
+////                    fractalDb.Cons.Remove(lcon);
+//                });
+//                dci.RightCons.ForEach(rcon =>
+//                {
+////                    DomainConceptInstance rightDci = rcon.RightDci;
+////                    rightDci.LeftCons = Connections(con => con.RightDciId == dci.Id, fractalDb);
+////                    rightDci.LeftCons.Remove(rcon);
+////                    fractalDb.Cons.Remove(rcon);
+//                });
+//                
                 fractalDb.Entry(dci).State = EntityState.Deleted;
                 return dci;
             }, (auditDomainConceptInstance, fractalDbPassed) =>
@@ -295,6 +306,15 @@ namespace Fractal.Domain
             return dci;
         }
 
+        public static DomainConcept Dc(string domainConceptName)
+        {
+            return Dc(dc => dc.Name == domainConceptName);
+        }
+
+        public static DomainConcept Dc(string domainConceptName, FractalContext fractalDb)
+        {
+            return Dc(dc => dc.Name == domainConceptName, fractalDb);
+        }
 
         public static DomainConcept Dc(Func<DomainConcept, bool> func)
         {
@@ -555,39 +575,44 @@ namespace Fractal.Domain
 
         public static DomainConceptInstance CreateDomainConceptInstance(string domainConceptName, params string[] fieldValues)
         {
-            return WithAudit(domainConceptName, (dc, fractalDb) =>
+            DomainConceptInstance domainConceptInstance = WithAudit(domainConceptName, (dc, fractalDb) =>
+            {
+                DomainConceptInstance dci = new DomainConceptInstance();
+                dci.Id = NextId();
+                dci.DomainConceptName = dc.Name;
+                dci.DomainConceptId = dc.Id;
+
+                int i = 0;
+                List<DomainConceptInstanceFieldValue> domainConceptInstanceFieldValues = new List<DomainConceptInstanceFieldValue>();
+                foreach (DomainConceptField domainConceptField in dc.Fields.OrderBy(f=>f.Forder))
                 {
-                    DomainConceptInstance dci = new DomainConceptInstance();
-                    dci.Id = NextId();
-                    dci.DomainConceptName = dc.Name;
-                    dci.DomainConceptId = dc.Id;
+                    DomainConceptInstanceFieldValue dcif = new DomainConceptInstanceFieldValue();
+                    dcif.Id = NextId();
+                    dcif.DomainConceptInstance = dci;
+                    dcif.DomainConceptName = dc.Name;
+                    dcif.DomainConceptId = dc.Id;
+                    dcif.DomainConceptFieldId = domainConceptField.Id;
+                    dcif.DomainConceptFieldName = domainConceptField.FieldName;
+                    dcif.Forder = domainConceptField.Forder;
+                    dcif.FieldValue = fieldValues[i++];
 
-                    int i = 0;
-                    List<DomainConceptInstanceFieldValue> domainConceptInstanceFieldValues = new List<DomainConceptInstanceFieldValue>();
-                    foreach (DomainConceptField domainConceptField in dc.Fields.OrderBy(f=>f.Forder))
-                    {
-                        DomainConceptInstanceFieldValue dcif = new DomainConceptInstanceFieldValue();
-                        dcif.Id = NextId();
-                        dcif.DomainConceptInstance = dci;
-                        dcif.DomainConceptName = dc.Name;
-                        dcif.DomainConceptId = dc.Id;
-                        dcif.DomainConceptFieldId = domainConceptField.Id;
-                        dcif.DomainConceptFieldName = domainConceptField.FieldName;
-                        dcif.Forder = domainConceptField.Forder;
-                        dcif.FieldValue = fieldValues[i++];
+                    domainConceptInstanceFieldValues.Add(dcif);
+                }
+                domainConceptInstanceFieldValues.Sort(new DciFieldSorter());
+                dci.Fields = domainConceptInstanceFieldValues;
 
-                        domainConceptInstanceFieldValues.Add(dcif);
-                    }
-                    domainConceptInstanceFieldValues.Sort(new DciFieldSorter());
-                    dci.Fields = domainConceptInstanceFieldValues;
+                // Objects
+                fractalDb.Dcis.Add(dci);
+                fractalDb.Dcifs.AddRange(dci.Fields);
 
-                    // Objects
-                    fractalDb.Dcis.Add(dci);
-                    fractalDb.Dcifs.AddRange(dci.Fields);
+                return dci;
 
-                    return dci;
-
-                }, (auditDomainConceptInstance, fractalDbPassed) => true);
+            }, (auditDomainConceptInstance, fractalDbPassed) => true);
+            if (domainConceptInstance.IsFunctionable())
+            {
+                FF.AddFunction(domainConceptInstance);
+            }
+            return domainConceptInstance;
         }
 
         private static AuditDomainConceptInstance CreateAuditDomainConceptInstance(FractalContext fractalDb, Audit audit, DomainConceptInstance dci)
@@ -659,32 +684,47 @@ namespace Fractal.Domain
 
         public static DomainConceptInstance Dci(Func<DomainConceptInstance, bool> func)
         {
-            List<DomainConceptInstance> dcs = Dcis(func, false);
-            return dcs.Count > 0 ? dcs.First() : null;
+            using (FractalContext fractalDb = new FractalContext())
+            {
+                return Dci(func, fractalDb);
+            }
         }
 
         public static DomainConceptInstance Dci(Func<DomainConceptInstance, bool> func, FractalContext fractalDb)
         {
-            List<DomainConceptInstance> dcs = Dcis(func, fractalDb, true);
-            return dcs.Count > 0 ? dcs.First() : null;
+            List<DomainConceptInstance> dcis = Dcis(func, fractalDb);
+            if (dcis.Count > 0)
+            {
+                DomainConceptInstance dci = dcis.First();
+                dci.Fields = Fields(dci, fractalDb);
+                dci.LeftConnections = Connections(con => con.RightDciId == dci.Id, fractalDb);
+                dci.RightConnections = Connections(con => con.LeftDciId == dci.Id, fractalDb);
+                return dci;
+            }
+
+            return null;
         }
 
-        public static List<DomainConceptInstance> Dcis(Func<DomainConceptInstance, bool> func, bool includeConnections)
+        public static List<DomainConceptInstance> Dcis(string dcName)
         {
             using (FractalContext fractalDb = new FractalContext())
             {
-                return Dcis(func, fractalDb, includeConnections);
+                return Dcis(dci=>dci.DomainConceptName == dcName, fractalDb);
             }
         }
 
-        public static List<DomainConceptInstance> Dcis(Func<DomainConceptInstance, bool> func, FractalContext fractalDb, bool includeConnections)
+        
+        public static List<DomainConceptInstance> Dcis(Func<DomainConceptInstance, bool> func)
         {
-            List<DomainConceptInstance> domainConceptInstances = fractalDb.Dcis.Where(func).ToList();
-            if (includeConnections)
+            using (FractalContext fractalDb = new FractalContext())
             {
-                domainConceptInstances.ForEach(dci=> { dci.AllLeftConnections();dci.AllRightConnections();});
+                return Dcis(func, fractalDb);
             }
-            return domainConceptInstances; ;
+        }
+
+        public static List<DomainConceptInstance> Dcis(Func<DomainConceptInstance, bool> func, FractalContext fractalDb)
+        {
+            return fractalDb.Dcis.Where(func).ToList(); ;
         }
 
 
@@ -709,12 +749,19 @@ namespace Fractal.Domain
             });
         }
 
+        public static DomainConceptInstance SelectOne(string domainConceptName, WhereClause where)
+        {
+            List<DomainConceptInstance> dcis = Select(domainConceptName,@where);
+            return dcis.Count > 0 ? dcis.First() : null;
+        }
+
+
         public static List<DomainConceptInstance> Select(string domainConceptName, WhereClause where)
         {
             using (FractalContext fractalDb = new FractalContext())
             {
-                return Dcis(dci => dci.DomainConceptName.Equals(domainConceptName) &&
-                               dci.GetFields(fractalDb).Find(where.Check) != null, fractalDb, false);
+                return Dcis(dci => dci.DomainConceptName.Equals(domainConceptName) && 
+                               dci.GetFields(fractalDb).Find(where.Check) != null, fractalDb);
             }
         }
 
@@ -730,8 +777,16 @@ namespace Fractal.Domain
 
         public static ConnectionDescription CreateConnectionDescription(DomainConcept dcLeft, DomainConcept dcRight, string connectionName, Cardinality cardinality, bool directed, bool required, bool reciprical)
         {
+            return CreateConnectionDescription(dcLeft.Name, dcRight.Name, connectionName, cardinality, directed, required, reciprical);
+        }
+
+        public static ConnectionDescription CreateConnectionDescription(string dcLeftName, string dcRightName, string connectionName, Cardinality cardinality, bool directed, bool required, bool reciprical)
+        {
             return WithAudit((fractalDb) =>
             {
+                DomainConcept dcLeft = Dc(dcLeftName, fractalDb);
+                DomainConcept dcRight = Dc(dcRightName, fractalDb);
+
                 ConnectionDescription connectionDescription = new ConnectionDescription();
                 connectionDescription.Id = NextId();
                 connectionDescription.LeftDomainConcept = dcLeft;
@@ -742,8 +797,6 @@ namespace Fractal.Domain
                 connectionDescription.Required = required;
                 connectionDescription.Reciprical = reciprical;
 
-                fractalDb.Dcs.Attach(dcLeft);
-                fractalDb.Dcs.Attach(dcRight);
                 dcLeft.RightConnectionDescriptions.Add(connectionDescription);
                 dcRight.LeftConnectionDescriptions.Add(connectionDescription);
                 fractalDb.Cds.Add(connectionDescription);
@@ -891,15 +944,20 @@ namespace Fractal.Domain
             return fractalDb.Cds.Where(func).ToList();
         }
 
-        
-        
         public static Connection Connect(DomainConceptInstance dciLeft, DomainConceptInstance dciRight, string cdName)
+        {
+            return Connect(dciLeft.Id, dciRight.Id, cdName);
+        }
+
+
+        public static Connection Connect(string dciLeftId, string dciRightId, string cdName)
         {
             using (FractalContext fractalDb = new FractalContext())
             {
-//                if (HasConnection(dciLeft, dciRight, "cdName"))
+                DomainConceptInstance dciLeft = Dci(dci=>dci.Id == dciLeftId, fractalDb);
+                DomainConceptInstance dciRight = Dci(dci => dci.Id == dciRightId, fractalDb);
+//                if (dciLeft.IsConnected(dciRight, cdName)) { return dciLeft.RightConnections.Find(con=>con.ConnectionDescription.ConnectionName == ); }
                 Audit audit = CreateAudit(fractalDb);
-
                 
                 ConnectionDescription connectionDescription = Cd(cd=>cd.ConnectionName == cdName && cd.GetDcLeft(fractalDb).Name == dciLeft.DomainConceptName && cd.GetDcRight(fractalDb).Name == dciRight.DomainConceptName, fractalDb);
                 if (connectionDescription == null)
@@ -913,12 +971,8 @@ namespace Fractal.Domain
                 connection.LeftDomainConceptInstance = dciLeft;
                 connection.RightDomainConceptInstance = dciRight;
 
-                fractalDb.Dcis.Attach(dciLeft);
-                fractalDb.Dcis.Attach(dciRight);
-                PoofChildren(dciLeft, fractalDb);
-                PoofChildren(dciRight, fractalDb);
-                dciLeft.RightConnections.Add(connection);
-                dciRight.LeftConnections.Add(connection);
+//                dciLeft.RightConnections.Add(connection);
+//                dciRight.LeftConnections.Add(connection);
                 fractalDb.Cons.Add(connection);
 
                 AuditDomainConceptInstance auditLeftDomainConceptInstance = CreateAuditDomainConceptInstance(fractalDb, audit, connection.LeftDci);
@@ -930,6 +984,10 @@ namespace Fractal.Domain
                 fractalDb.ADcis.Add(auditRightDomainConceptInstance);
                 fractalDb.ACons.Add(auditConnection);
 
+                dciLeft.Fields.ForEach(f => fractalDb.Entry(f).State = EntityState.Unchanged);
+                dciRight.Fields.ForEach(f => fractalDb.Entry(f).State = EntityState.Unchanged);
+                fractalDb.Entry(dciLeft).State = EntityState.Unchanged;
+                fractalDb.Entry(dciRight).State = EntityState.Unchanged;
                 fractalDb.SaveChanges();
 
                 return connection;

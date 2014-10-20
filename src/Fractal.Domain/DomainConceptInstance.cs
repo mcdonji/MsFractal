@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Fractal.Domain
 {
@@ -62,14 +64,71 @@ namespace Fractal.Domain
         }
 
 
-        public List<DomainConceptInstance> AllLeftConnections()
+        public List<DomainConceptInstance> AllLeftDcis()
         {
             return LeftConnections.ConvertAll(con => con.LeftDomainConceptInstance);
         }
-        public List<DomainConceptInstance> AllRightConnections()
+        public List<DomainConceptInstance> AllRightDcis()
         {
             return RightConnections.ConvertAll(con => con.RightDomainConceptInstance);
         }
 
+        public List<Connection> GetRightConnections(string connectionName)
+        {
+            return RightConnections.FindAll(con => con.ConnectionDescription.ConnectionName == connectionName);
+        } 
+
+        public List<DomainConceptInstance> GetRightDcis(string connectionName)
+        {
+            List<DomainConceptInstance> domainConceptInstances = RightConnections.FindAll(con=>con.ConnectionDescription.ConnectionName == connectionName).ConvertAll(con => con.RightDomainConceptInstance);
+            if (domainConceptInstances.Count > 0)
+            {
+                if (domainConceptInstances.First().IsOrdered())
+                {
+                    domainConceptInstances.Sort(new OrderedDciSort());
+                }
+            }
+            return domainConceptInstances;
+        }
+
+        private bool IsOrdered()
+        {
+            return Fields.Any(f => f.DomainConceptFieldName == "Order");
+        }
+
+        public List<DomainConceptInstance> GetLeftDcis(string connectionName)
+        {
+            List<DomainConceptInstance> domainConceptInstances = LeftConnections.FindAll(con=>con.ConnectionDescription.ConnectionName == connectionName).ConvertAll(con => con.LeftDomainConceptInstance);
+            if (domainConceptInstances.Count > 0)
+            {
+                if (domainConceptInstances.First().IsOrdered())
+                {
+                    domainConceptInstances.Sort(new OrderedDciSort());
+                }
+            }
+            return domainConceptInstances;
+        }
+
+        public bool IsFunctionable()
+        {
+            return Fields.Any(fv=>fv.DomainConceptFieldName == FF.FFUNC);
+        }
+
+        public DomainConceptInstance FirstRight(string connectionName)
+        {
+            return GetRightDcis(connectionName).First();
+        }
+        public DomainConceptInstance FirstLeft(string connectionName)
+        {
+            return GetLeftDcis(connectionName).First();
+        }
+    }
+
+    public class OrderedDciSort : IComparer<DomainConceptInstance>
+    {
+        public int Compare(DomainConceptInstance x, DomainConceptInstance y)
+        {
+            return Int32.Parse(x["Order"]).CompareTo(Int32.Parse(y["Order"]));
+        }
     }
 }

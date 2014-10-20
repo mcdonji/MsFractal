@@ -70,25 +70,31 @@ namespace Fractal.Tests.Domain
         {
             DomainConcept foo = FractalDb.CreateDomainConcept("Foo", "One", "Two", "Three");
             DomainConcept foo2 = FractalDb.CreateDomainConcept("Foo2", "Three", "Four");
-            FractalDb.CreateConnectionDescription(foo, foo2, "Things", Cardinality.OneToOne, false, false, true);
+            FractalDb.CreateConnectionDescription(foo, foo2, "Things", Cardinality.OneToMany, false, false, true);
+            FractalDb.CreateConnectionDescription(foo, foo2, "OtherThings", Cardinality.OneToMany, false, false, true);
 
             //ConnectionDescriptionParameter cdp = FractalDb.CreateConnectionDescriptionParameter(foo, foo2, "Things", "Traversal");
 
             DomainConceptInstance jim = FractalDb.CreateDomainConceptInstance("Foo", "Jim", "M", "McDonald");
             DomainConceptInstance blue = FractalDb.CreateDomainConceptInstance("Foo2", "Blue", "Tomato");
+            DomainConceptInstance red = FractalDb.CreateDomainConceptInstance("Foo2", "Red", "Ant");
+            DomainConceptInstance green = FractalDb.CreateDomainConceptInstance("Foo2", "Green", "Leaves");
 
-            Connection con = FractalDb.Connect(jim, blue, "Things");
+            Connection con1 = FractalDb.Connect(jim, blue, "Things");
+            Connection con2 = FractalDb.Connect(jim, red, "Things");
+            Connection con3 = FractalDb.Connect(jim, green, "OtherThings");
 
             DomainConceptInstance returnedJim = FractalDb.Dci(dci => dci.DomainConceptName == "Foo" && dci.Id == jim.Id);
 
-            List<DomainConceptInstance> allLeft = returnedJim.AllLeftConnections();
-            List<DomainConceptInstance> allRight = returnedJim.AllRightConnections();
+            List<DomainConceptInstance> allLeft = returnedJim.AllLeftDcis();
+            List<DomainConceptInstance> allRight = returnedJim.AllRightDcis();
 
             Assert.AreEqual(0, allLeft.Count);
-            Assert.AreEqual(1, allRight.Count);
-
+            Assert.AreEqual(3, allRight.Count);
 
         }
+
+
 
 
     }

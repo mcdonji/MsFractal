@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="Domain\DomainConceptDataAccessTest.cs" />
     <Compile Include="Domain\DomainConceptInstanceDataAccessTest.cs" />
+    <Compile Include="Domain\FunctionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
