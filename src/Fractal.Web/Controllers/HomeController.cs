@@ -33,7 +33,14 @@ namespace Fractal.Web.Controllers
                 Razorness razorness = RunSiteControllers(site, request) ?? FindPageController(site, request);
                 if (razorness != null)
                 {
-                    return View(razorness.WebPageId, razorness.FModel);
+                    if (razorness.IsJson)
+                    {
+                        return Json(razorness.FModel);
+                    }
+                    else
+                    {
+                        return View(razorness.WebPageId, razorness.FModel);
+                    }
                 }
             }
             return View();
@@ -61,7 +68,7 @@ namespace Fractal.Web.Controllers
             if (pageController != null)
             {
                 object fmodel = FF.Rf(pageController, request, pageController);
-                return new Razorness(pageController.FirstRight("PageControllerToPage").Id, (FModel)fmodel);
+                return new Razorness(pageController["JSON"], pageController.FirstRight("PageControllerToPage").Id, (FModel)fmodel);
             }
             return null;
         }

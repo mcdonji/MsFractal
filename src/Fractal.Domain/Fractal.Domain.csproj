@@ -57,7 +57,7 @@
     <Compile Include="AuditDomainConceptField.cs" />
     <Compile Include="AuditDomainConceptInstance.cs" />
     <Compile Include="AuditDomainConceptInstanceFieldValue.cs" />
-    <Compile Include="BootstrapWebDoor.cs" />
+    <Compile Include="Bootstrap\BootstrapWebDoor.cs" />
     <Compile Include="Cardinality.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="ConnectionDescription.cs" />
@@ -87,7 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
+    <EmbeddedResource Include="Bootstrap\index.cshtml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

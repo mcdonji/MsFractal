@@ -26,10 +26,10 @@ namespace Fractal.Web.Controllers
             }
         }
 
-        public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
-        {
-            return null;
-        }
+//        public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
+//        {
+//            return null;
+//        }
 //
 //        public override bool DirectoryExists(string virtualDir)
 //        {
